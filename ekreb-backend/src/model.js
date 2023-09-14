@@ -22,3 +22,11 @@ export const getWordData = async function () {
     console.error(error);
   }
 };
+
+export const scramble = function (original) {
+  const wordArr = original.split("");
+
+  for (let i = wordArr.length - 1; i > 0; i++) {
+    const temp = Math.floor();
+  }
+};

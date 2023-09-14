@@ -1,7 +1,13 @@
 import express from "express";
 import * as model from "./model.js";
+import cors from "cors";
+
+app.use(cors());
 
 const app = express();
+const userStats = {
+  score: 0,
+};
 
 app.get("/api/v1/words", async (req, res) => {
   try {
@@ -15,7 +21,7 @@ app.get("/api/v1/words", async (req, res) => {
       frequency: data.frequency,
     };
 
-    res.send({ status: "sucess", data: word });
+    res.send({ status: "success", data: word });
   } catch (err) {
     console.error(err);
   }
@@ -23,6 +29,11 @@ app.get("/api/v1/words", async (req, res) => {
 
 app.post("/", (req, res) => {
   res.send("You can send to this endpoint...");
+});
+
+app.patch("/api/v1/score", (req, res) => {
+  userStats.score += parseInt(req.query.val);
+  res.send(`${userStats.score}`);
 });
 
 app.use((req, res, next) => {

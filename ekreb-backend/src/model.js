@@ -1,9 +1,9 @@
 // const axios = require("axios");
 import axios from "axios";
 
-export const getWordData = async function () {
+export const getWordData = async function (req, res) {
   try {
-    const myResponse = await axios.request({
+    const response = await axios.request({
       method: "GET",
       url: "https://wordsapiv1.p.rapidapi.com/words/",
       params: {
@@ -17,7 +17,15 @@ export const getWordData = async function () {
       },
     });
 
-    return myResponse.data;
+    const data = response.data;
+    const word = {
+      word: data.word,
+      definition: data.results[0].definition,
+      partOfSpeech: data.results[0].partOfSpeech,
+      frequency: data.frequency,
+    };
+
+    res.send({ status: "success", data: word });
   } catch (error) {
     console.error(error);
   }

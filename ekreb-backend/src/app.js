@@ -2,37 +2,22 @@ import express from "express";
 import * as model from "./model.js";
 import cors from "cors";
 
-app.use(cors());
-
 const app = express();
+app.use(cors());
 const userStats = {
   score: 0,
 };
 
-app.get("/api/v1/words", async (req, res) => {
-  try {
-    const data = await model.getWordData();
-    console.log(data);
-
-    const word = {
-      word: data.word,
-      definition: data.results[0].definition,
-      partOfSpeech: data.results[0].partOfSpeech,
-      frequency: data.frequency,
-    };
-
-    res.send({ status: "success", data: word });
-  } catch (err) {
-    console.error(err);
-  }
-});
+app.get("/api/v1/words", [model.getWordData]);
 
 app.post("/", (req, res) => {
   res.send("You can send to this endpoint...");
 });
 
 app.patch("/api/v1/score", (req, res) => {
+  console.log(userStats.score);
   userStats.score += parseInt(req.query.val);
+  console.log(userStats.score);
   res.send(`${userStats.score}`);
 });
 

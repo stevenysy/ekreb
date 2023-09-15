@@ -1,27 +1,23 @@
 import axios from "axios";
 import { WORDS_MAX_LEN, WORD_URL } from "./config.js";
 
+export const userState = {
+  score: 0,
+  avgUnscrambleTime: 0,
+};
+
 /**
  * Calls a word dictionary API to get a random word. Sends an object containing the word and
- * the word's definition, part of speech, and frequency used
+ * the word's definition, part of speech, and frequency score as the response
  * @param {Object} req request object passed in by Express
  * @param {Object} res response object passed in by Express
  */
 export const getWordData = async function (req, res) {
   try {
-    const { data } = await axios.request({
-      method: "GET",
-      url: `${WORD_URL}`,
-      params: {
-        random: "true",
-        lettersMax: `${WORDS_MAX_LEN}`,
-        hasDetails: "definitions",
-      },
-      headers: {
-        "X-RapidAPI-Key": "53560c708amsh7574e0f3f7ee562p1baadajsn5ad54f952a63",
-        "X-RapidAPI-Host": "wordsapiv1.p.rapidapi.com",
-      },
-    });
+    let data = await requestWord();
+    while (!data.frequency) {
+      data = await requestWord();
+    }
 
     const word = {
       word: data.word,
@@ -35,6 +31,28 @@ export const getWordData = async function (req, res) {
   } catch (err) {
     res.send({ status: "failed", message: err.message });
   }
+};
+
+/**
+ * Calls a word dictionary API to get a random word
+ * @returns object containing data of the word returned from the dictionary API
+ */
+const requestWord = async function () {
+  const { data } = await axios.request({
+    method: "GET",
+    url: `${WORD_URL}`,
+    params: {
+      random: "true",
+      lettersMax: `${WORDS_MAX_LEN}`,
+      hasDetails: "definitions",
+    },
+    headers: {
+      "X-RapidAPI-Key": "53560c708amsh7574e0f3f7ee562p1baadajsn5ad54f952a63",
+      "X-RapidAPI-Host": "wordsapiv1.p.rapidapi.com",
+    },
+  });
+
+  return data;
 };
 
 /**

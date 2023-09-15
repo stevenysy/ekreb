@@ -4,10 +4,8 @@ import cors from "cors";
 
 const app = express();
 app.use(cors());
-const userStats = {
-  score: 0,
-};
 
+// GET request to get a random scrambled word
 app.get("/api/v1/words", [model.getWordData]);
 
 app.post("/", (req, res) => {
@@ -15,10 +13,10 @@ app.post("/", (req, res) => {
 });
 
 app.patch("/api/v1/score", (req, res) => {
-  console.log(userStats.score);
-  userStats.score += parseInt(req.query.val);
-  console.log(userStats.score);
-  res.send(`${userStats.score}`);
+  console.log("score before:", model.userState.score);
+  model.userState.score += parseInt(req.query.val);
+  console.log("score after:", model.userState.score);
+  res.send(`${model.userState.score}`);
 });
 
 app.use((req, res, next) => {

@@ -3,7 +3,22 @@ import { WORDS_MAX_LEN, WORD_URL } from "./config.js";
 
 export const userState = {
   score: 0,
+  gamesPlayed: 0,
+  totalTime: 0,
   avgUnscrambleTime: 0,
+};
+
+/**
+ * Updates the user's score and time data
+ * @param {String} score score to be added to the user's total score
+ * @param {String} time time in seconds to be added to the user's total time
+ */
+export const updateScoreAndTime = function (score, time) {
+  userState.score += parseInt(score);
+  userState.totalTime += parseInt(time);
+  userState.avgUnscrambleTime = Math.round(
+    userState.totalTime / userState.gamesPlayed
+  );
 };
 
 /**
@@ -13,6 +28,7 @@ export const userState = {
  * @param {Object} res response object passed in by Express
  */
 export const getWordData = async function (req, res) {
+  userState.gamesPlayed++;
   try {
     let data = await requestWord();
     while (!data.frequency) {
@@ -27,9 +43,10 @@ export const getWordData = async function (req, res) {
       frequency: data.frequency,
     };
 
-    res.send({ status: "success", data: word });
+    console.log(`${userState.gamesPlayed} games played!`);
+    res.json({ status: "success", data: word });
   } catch (err) {
-    res.send({ status: "failed", message: err.message });
+    res.json({ status: "failed", message: err.message });
   }
 };
 
@@ -56,7 +73,7 @@ const requestWord = async function () {
 };
 
 /**
- * Scrambles the word passed in
+ * Helper function that scrambles the word passed in
  * @param {String} original the original, unscrambled word
  * @returns a scrambled version of the original word
  */
@@ -76,4 +93,65 @@ const scramble = function (original) {
   if (scrambled === original) return scramble(scrambled);
 
   return scrambled;
+};
+
+/**
+ * Checks if the user's guess is a valid unscrabled version of the scrambled word that
+ * can be found in a dictionary API
+ * @param {String} guess the user's guess
+ * @param {String} original the original word
+ * @returns true if the guess is correct, false otherwise
+ */
+export const checkUserGuess = async function (guess, original) {
+  if (guess.toLowerCase() === original.toLowerCase()) return true;
+  if (guess.length !== original.length) return false;
+
+  // check if user guess contains exactly the same characters as original word
+  const guessArr = guess.toLowerCase().split("");
+  const origArr = original.toLowerCase().split("");
+  for (const char of origArr) {
+    if (guessArr.indexOf(char) === -1) {
+      return false;
+    } else {
+      guessArr.splice(guessArr.indexOf(char), 1);
+    }
+  }
+
+  // check if user guess is valid dictionary word
+  try {
+    const status = await checkDict(guess);
+    if (status === 404) return false;
+  } catch (err) {
+    console.error(`${err.message}. ${guess} is not a valid dictionary word!`);
+    return false;
+  }
+
+  // the user guess is a valid dictionary word that contains exactly the same characters
+  // as the original word: return true
+  return true;
+};
+
+/**
+ * Helper function, calls the Words API to check if the word passed in is a valid dictionary word
+ * @param {String} word the word to be checked
+ * @returns the status of the API response
+ */
+const checkDict = async function (word) {
+  const config = {
+    method: "get",
+    maxBodyLength: Infinity,
+    url: `https://wordsapiv1.p.rapidapi.com/words/${word}`,
+    headers: {
+      "X-RapidAPI-Key": "53560c708amsh7574e0f3f7ee562p1baadajsn5ad54f952a63",
+      "X-RapidAPI-Host": "wordsapiv1.p.rapidapi.com",
+    },
+  };
+
+  try {
+    // call the API and request for the word passed in
+    const response = await axios.request(config);
+    return response.status;
+  } catch (err) {
+    throw err; // throw the error again to be handled by the checkUserGuess() function
+  }
 };

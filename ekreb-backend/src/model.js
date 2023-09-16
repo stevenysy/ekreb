@@ -13,7 +13,7 @@ export const userState = {
  * @param {String} score score to be added to the user's total score
  * @param {String} time time in seconds to be added to the user's total time
  */
-export const updateScoreAndTime = function (score, time) {
+export const updateScoreAndTime = function (time, score = "0") {
   userState.score += parseInt(score);
   userState.totalTime += parseInt(time);
   userState.avgUnscrambleTime = Math.round(

@@ -1,4 +1,5 @@
 import GetWordBtn from "./GetWordBtn";
+import GuessForm from "./GuessForm";
 
 function App() {
   const title = "ekreb";
@@ -8,6 +9,7 @@ function App() {
       <div className="title">
         <h1>{title}</h1>
       </div>
+      <GuessForm />
       <GetWordBtn />
     </div>
   );

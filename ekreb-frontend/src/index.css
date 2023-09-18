@@ -1,14 +1,51 @@
-@import url('https://fonts.googleapis.com/css2?family=Courier+Prime&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@300&display=swap');
 
 * {
   margin: 0;
-  font-family: "Courier Prime";
+  font-family: "IBM Plex Mono", monospace;
   color: #333;
 }
 
-h1 {
-  color:white;
-  text-shadow: -1px 0 #333, 0 1px #333, 1px 0 #333, 0 -1px #333;
+body {
+  background-color: #212121;
+}
+
+.title {
+  display: flex;
+  justify-content: center;
+}
+
+.title h1 {
+  display: flex;
+  color: azure;
   font-size: 100px;
-  text-align: center;
+  align-items: center;
+  margin-top: 6rem;
+  gap: 8px
+}
+
+@keyframes cursor-blink {
+  0% {
+    opacity: 0;
+  }
+}
+
+.title h1::after {
+  content: "";
+  width: 7px;
+  height: 80px;
+  background: azure;
+  display: inline-block;
+  animation: cursor-blink 1.5s steps(2) infinite;
+}
+
+.buttons {
+  display: flex;
+  justify-content: center;
+}
+
+.textfield {
+  display: flex;
+  justify-content: center;
+  margin-top: 3rem;
 }

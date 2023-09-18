@@ -24,10 +24,16 @@ const theme = createTheme({
 });
 
 const GetWordBtn = () => {
+  const handleClick = () => {
+    console.log("requested word");
+  };
+
   return (
     <ThemeProvider theme={theme}>
       <div className="buttons">
-        <Button variant="contained">Get a word</Button>
+        <Button variant="contained" onClick={handleClick}>
+          Get a word
+        </Button>
       </div>
     </ThemeProvider>
   );

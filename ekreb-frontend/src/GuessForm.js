@@ -1,5 +1,5 @@
-import Box from "@mui/material/Box";
 import TextField from "@mui/material/TextField";
+import { useState } from "react";
 import { outlinedInputClasses } from "@mui/material/OutlinedInput";
 import { createTheme, ThemeProvider, useTheme } from "@mui/material/styles";
 
@@ -77,28 +77,36 @@ const customTheme = (outerTheme) =>
     },
   });
 
+/**
+ * Creates a component for the form used to submit the user's guess
+ * @returns the component for the form used to submit the user's guess
+ */
 const GuessForm = () => {
   const outerTheme = useTheme();
+  const [text, setText] = useState("");
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    console.log(text);
+    setText("");
+  };
 
   return (
     <div className="textfield">
-      <Box
-        component="form"
-        sx={{
-          "& > :not(style)": { m: 1, width: "25ch" },
-        }}
-        noValidate
-        autoComplete="off"
-      >
+      <form noValidate autoComplete="off" onSubmit={handleSubmit}>
         <ThemeProvider theme={customTheme(outerTheme)}>
           <TextField
-            id="outlined-basic"
+            value={text}
+            id="user-guess"
             label="Unscramble!"
             variant="outlined"
             sx={{ input: { color: "#E0E3E7" } }}
+            onChange={(e) => {
+              setText(e.target.value);
+            }}
           />
         </ThemeProvider>
-      </Box>
+      </form>
     </div>
   );
 };

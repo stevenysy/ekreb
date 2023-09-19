@@ -4,6 +4,7 @@
   margin: 0;
   font-family: "IBM Plex Mono", monospace;
   color: #333;
+  box-sizing: border-box;
 }
 
 body {
@@ -20,7 +21,7 @@ body {
   color: azure;
   font-size: 100px;
   align-items: center;
-  margin-top: 6rem;
+  margin-top: 8rem;
   gap: 8px
 }
 
@@ -49,3 +50,34 @@ body {
   justify-content: center;
   margin-top: 3rem;
 }
+
+.loading-text {
+  display: flex;
+  justify-content: center;
+  margin-top: 10px;
+}
+
+.loading-text span {
+  color: azure;
+  font-size: small;
+  font-weight: bold;
+  margin-left: 0.5rem;
+}
+
+.loader {
+  border: 3px solid #f3f3f3;
+  border-top: 3px solid #3498db;
+  border-radius: 50%;
+  width: 10px;
+  height: 10px;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+} 

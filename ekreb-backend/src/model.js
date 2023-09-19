@@ -3,7 +3,7 @@ import { WORDS_MAX_LEN, WORD_URL } from "./config.js";
 
 export const userState = {
   score: 0,
-  gamesPlayed: 0,
+  wordsGuessed: 0,
   totalTime: 0,
   avgUnscrambleTime: 0,
 };
@@ -13,11 +13,12 @@ export const userState = {
  * @param {String} score score to be added to the user's total score
  * @param {String} time time in seconds to be added to the user's total time
  */
-export const updateScoreAndTime = function (time, score = "0") {
+export const updateState = function (time, score) {
+  userState.wordsGuessed++;
   userState.score += parseInt(score);
   userState.totalTime += parseInt(time);
   userState.avgUnscrambleTime = Math.round(
-    userState.totalTime / userState.gamesPlayed
+    userState.totalTime / userState.wordsGuessed
   );
 };
 
@@ -28,7 +29,6 @@ export const updateScoreAndTime = function (time, score = "0") {
  * @param {Object} res response object passed in by Express
  */
 export const getWordData = async function (req, res) {
-  userState.gamesPlayed++;
   try {
     let data = await requestWord();
     while (!data.frequency) {
@@ -43,7 +43,6 @@ export const getWordData = async function (req, res) {
       frequency: data.frequency,
     };
 
-    console.log(`${userState.gamesPlayed} games played!`);
     res.json({ status: "success", data: word });
   } catch (err) {
     res.json({ status: "failed", message: err.message });

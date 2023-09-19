@@ -1,5 +1,4 @@
 import TextField from "@mui/material/TextField";
-import { useState } from "react";
 import { outlinedInputClasses } from "@mui/material/OutlinedInput";
 import { createTheme, ThemeProvider, useTheme } from "@mui/material/styles";
 
@@ -81,9 +80,9 @@ const customTheme = (outerTheme) =>
  * Creates a component for the form used to submit the user's guess
  * @returns the component for the form used to submit the user's guess
  */
-const GuessForm = ({ helperText, handleSubmit }) => {
+const GuessForm = ({ helperText, handleSubmit, text, setText }) => {
   const outerTheme = useTheme();
-  const [text, setText] = useState("");
+  // const [text, setText] = useState("");
 
   return (
     <div className="textfield">

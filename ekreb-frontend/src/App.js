@@ -17,6 +17,7 @@ function App() {
   const [gameStart, setGameStart] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [loadingText, setLoadingText] = useState("");
+  const [guessText, setGuessText] = useState("");
 
   /**
    * Renders a loading spinner with the message set to text
@@ -60,6 +61,7 @@ function App() {
       updateWord(data);
       setIsLoading(false);
       setTitle(data.scrambledWord);
+      setGuessText("");
       if (!gameStart) setGameStart(true);
     } catch (err) {
       console.error(err);
@@ -73,12 +75,36 @@ function App() {
   const handleSubmitGuess = async function (guess) {
     console.log(guess);
     console.log(word);
+
+    const requestOptions = {
+      method: "PATCH",
+      redirect: "follow",
+    };
+
+    try {
+      const response = await fetch(
+        `/api/v1/words?guess=${guess}&original=${
+          word.word
+        }&time=10&score=${Math.pow(2, word.word.length)}`,
+        requestOptions
+      );
+      const data = await response.json();
+      console.log(data);
+    } catch (err) {
+      console.error("wrong guess!");
+    }
   };
 
   return (
     <div className="App">
       <Title word={title} />
-      {gameStart && <GuessForm handleSubmit={handleSubmitGuess} />}
+      {gameStart && (
+        <GuessForm
+          handleSubmit={handleSubmitGuess}
+          text={guessText}
+          setText={setGuessText}
+        />
+      )}
       <GetWordBtn handleClick={handleGetWord} clicked={gameStart} />
       {isLoading && <LoadingText text={loadingText} />}
     </div>

@@ -12,19 +12,17 @@ app.get("/api/v1/words", [model.getWordData]);
 //////////////////////////////////////////////////////////
 // endpoint to handle PATCH request for the frontend to send the user's guess
 app.patch("/api/v1/words", async (req, res) => {
-  const { guess, original, time, score, giveup = "false" } = req.query;
+  const { guess, original, time, score } = req.query;
 
   // check the user's guess
   const correct = await model.checkUserGuess(guess, original);
   if (correct) {
     // update the score and the totalTime counter with the total time spent this round
-    model.updateScoreAndTime(time, score);
+    model.updateState(time, score);
     console.log(model.userState);
 
     res.status(200).json({ status: "correct!", data: model.userState });
   } else {
-    // update the time if the user gave up
-    if (giveup === "true") model.updateScoreAndTime(time);
     res.status(404).json({ status: "wrong!" });
   }
 });

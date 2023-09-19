@@ -12,7 +12,7 @@ const customTheme = (outerTheme) =>
       MuiTextField: {
         styleOverrides: {
           root: {
-            "--TextField-brandBorderColor": "#E0E3E7",
+            "--TextField-brandBorderColor": "#f0ffff",
             "--TextField-brandBorderHoverColor": "#B2BAC2",
             "--TextField-brandBorderFocusedColor": "#E0E3E7",
             "& label": {
@@ -81,25 +81,28 @@ const customTheme = (outerTheme) =>
  * Creates a component for the form used to submit the user's guess
  * @returns the component for the form used to submit the user's guess
  */
-const GuessForm = () => {
+const GuessForm = ({ helperText, handleSubmit }) => {
   const outerTheme = useTheme();
   const [text, setText] = useState("");
 
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    console.log(text);
-    setText("");
-  };
-
   return (
     <div className="textfield">
-      <form noValidate autoComplete="off" onSubmit={handleSubmit}>
+      <form
+        noValidate
+        autoComplete="off"
+        onSubmit={(e) => {
+          e.preventDefault();
+          handleSubmit(text);
+          setText("");
+        }}
+      >
         <ThemeProvider theme={customTheme(outerTheme)}>
           <TextField
             value={text}
             id="user-guess"
             label="Unscramble!"
             variant="outlined"
+            helperText={helperText}
             sx={{ input: { color: "#E0E3E7" } }}
             onChange={(e) => {
               setText(e.target.value);

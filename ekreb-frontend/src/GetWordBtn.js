@@ -27,27 +27,12 @@ const theme = createTheme({
  * Creates a component for the button to fetch a word from the backend
  * @returns component for the button to fetch a word from the backend
  */
-const GetWordBtn = ({ handleClick }) => {
-  // const handleClick = async () => {
-  //   const requestOptions = {
-  //     method: "GET",
-  //     redirect: "follow",
-  //   };
-
-  //   try {
-  //     const response = await fetch("/api/v1/words", requestOptions);
-  //     const { data } = await response.json();
-  //     console.log(data);
-  //   } catch (err) {
-  //     console.error(err);
-  //   }
-  // };
-
+const GetWordBtn = ({ handleClick, clicked }) => {
   return (
     <div className="buttons">
       <ThemeProvider theme={theme}>
         <Button variant="contained" onClick={handleClick}>
-          Get a word
+          {`Get a ${clicked ? "new " : ""}word`}
         </Button>
       </ThemeProvider>
     </div>

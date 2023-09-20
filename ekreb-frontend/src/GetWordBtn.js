@@ -16,7 +16,6 @@ const theme = createTheme({
           textTransform: "lowercase",
           fontWeight: "bold",
           fontSize: "1.25rem",
-          marginTop: "3rem",
         },
       },
     },

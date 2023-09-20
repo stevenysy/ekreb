@@ -18,6 +18,9 @@ function App() {
   const [isLoading, setIsLoading] = useState(false);
   const [loadingText, setLoadingText] = useState("");
   const [guessText, setGuessText] = useState("");
+  const [wrongGuess, setWrongGuess] = useState(false);
+  const [correct, setCorrect] = useState(false);
+  const [message, setMessage] = useState("Unscramble!");
 
   /**
    * Renders a loading spinner with the message set to text
@@ -51,6 +54,7 @@ function App() {
       redirect: "follow",
     };
     renderLoad("fetching a word...");
+    setCorrect(false);
 
     try {
       const response = await fetch("/api/v1/words", requestOptions);
@@ -90,8 +94,18 @@ function App() {
       );
       const data = await response.json();
       console.log(data);
+
+      if (!data.data) {
+        setWrongGuess(true);
+        setMessage("Wrong guess! Try again!");
+      } else {
+        setWrongGuess(false);
+        setCorrect(true);
+        setMessage(`Correct!`);
+        setTitle(guess);
+      }
     } catch (err) {
-      console.error("wrong guess!");
+      console.error("Wrong guess! Try again :-)");
     }
   };
 
@@ -103,6 +117,9 @@ function App() {
           handleSubmit={handleSubmitGuess}
           text={guessText}
           setText={setGuessText}
+          error={wrongGuess}
+          message={message}
+          correct={correct}
         />
       )}
       <GetWordBtn handleClick={handleGetWord} clicked={gameStart} />

@@ -23,7 +23,7 @@ app.patch("/api/v1/words", async (req, res) => {
 
     res.status(200).json({ status: "correct!", data: model.userState });
   } else {
-    res.status(404).json({ status: "wrong!" });
+    res.status(200).json({ status: "wrong!" });
   }
 });
 

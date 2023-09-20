@@ -14,14 +14,18 @@ const customTheme = (outerTheme) =>
             "--TextField-brandBorderColor": "#f0ffff",
             "--TextField-brandBorderHoverColor": "#B2BAC2",
             "--TextField-brandBorderFocusedColor": "#E0E3E7",
-            "& label": {
+            "--TextField-brandBorderCorrectColor": "#399E27",
+            "& label:not(.Mui-disabled, .Mui-error)": {
               color: "var(--TextField-brandBorderColor)",
             },
             "& label.Mui-hover": {
               color: "var(--TextField-brandBorderHoverColor)",
             },
-            "& label.Mui-focused": {
+            "& label.Mui-focused:not(.Mui-disabled, .Mui-error)": {
               color: "var(--TextField-brandBorderFocusedColor)",
+            },
+            "& label.Mui-disabled": {
+              color: "var(--TextField-brandBorderCorrectColor)",
             },
           },
         },
@@ -32,11 +36,16 @@ const customTheme = (outerTheme) =>
             borderColor: "var(--TextField-brandBorderColor)",
           },
           root: {
-            [`&:hover .${outlinedInputClasses.notchedOutline}`]: {
-              borderColor: "var(--TextField-brandBorderHoverColor)",
-            },
-            [`&.Mui-focused .${outlinedInputClasses.notchedOutline}`]: {
-              borderColor: "var(--TextField-brandBorderFocusedColor)",
+            [`&:hover:not(.Mui-disabled, .Mui-error) .${outlinedInputClasses.notchedOutline}`]:
+              {
+                borderColor: "var(--TextField-brandBorderHoverColor)",
+              },
+            [`&.Mui-focused:not(.Mui-disabled, .Mui-error) .${outlinedInputClasses.notchedOutline}`]:
+              {
+                borderColor: "var(--TextField-brandBorderFocusedColor)",
+              },
+            [`&.Mui-disabled .${outlinedInputClasses.notchedOutline}`]: {
+              borderColor: "var(--TextField-brandBorderCorrectColor)",
             },
           },
         },
@@ -80,9 +89,15 @@ const customTheme = (outerTheme) =>
  * Creates a component for the form used to submit the user's guess
  * @returns the component for the form used to submit the user's guess
  */
-const GuessForm = ({ helperText, handleSubmit, text, setText }) => {
+const GuessForm = ({
+  message,
+  handleSubmit,
+  text,
+  setText,
+  error,
+  correct,
+}) => {
   const outerTheme = useTheme();
-  // const [text, setText] = useState("");
 
   return (
     <div className="textfield">
@@ -98,10 +113,12 @@ const GuessForm = ({ helperText, handleSubmit, text, setText }) => {
         <ThemeProvider theme={customTheme(outerTheme)}>
           <TextField
             value={text}
+            error={error}
+            disabled={correct}
             id="user-guess"
-            label="Unscramble!"
+            label={message}
             variant="outlined"
-            helperText={helperText}
+            // helperText={helperText}
             sx={{ input: { color: "#E0E3E7" } }}
             onChange={(e) => {
               setText(e.target.value);

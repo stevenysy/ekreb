@@ -21,9 +21,9 @@ app.patch("/api/v1/words", async (req, res) => {
     model.updateState(time, score);
     console.log(model.userState);
 
-    res.status(200).json({ status: "correct!", data: model.userState });
+    res.json({ status: "correct!", data: model.userState });
   } else {
-    res.status(200).json({ status: "wrong!" });
+    res.json({ status: "wrong!" });
   }
 });
 

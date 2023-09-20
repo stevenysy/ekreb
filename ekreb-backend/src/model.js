@@ -118,8 +118,7 @@ export const checkUserGuess = async function (guess, original) {
 
   // check if user guess is valid dictionary word
   try {
-    const status = await checkDict(guess);
-    if (status === 404) return false;
+    await checkDict(guess);
   } catch (err) {
     console.error(`${err.message}. ${guess} is not a valid dictionary word!`);
     return false;

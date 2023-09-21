@@ -4,6 +4,7 @@ import GetWordBtn from "./GetWordBtn";
 import GuessForm from "./GuessForm";
 import LoadingText from "./LoadingText";
 import NavBar from "./NavBar";
+import { HINT_SEC } from "./config";
 
 function App() {
   // states
@@ -27,6 +28,8 @@ function App() {
   const timeRef = useRef();
   const [timerId, setTimerId] = useState(0);
   const [hintCount, setHintCount] = useState(0);
+  const [displayHint, setDisplayHint] = useState(false);
+  const [lastHintTime, setLastHintTime] = useState(0);
   useEffect(() => {
     timeRef.current = time;
   }, [time]);
@@ -64,6 +67,10 @@ function App() {
     };
     renderLoad("fetching a word...");
     setCorrect(false);
+    setMessage("Press Enter to unscramble!");
+    clearInterval(timerId);
+    setTime(0);
+    setLastHintTime(0);
 
     try {
       const response = await fetch("/api/v1/words", requestOptions);
@@ -134,12 +141,20 @@ function App() {
   };
 
   const handleGetHint = function () {
+    setLastHintTime(time);
+    setDisplayHint(false);
     if (hintCount < word.word.length) setHintCount(hintCount + 1);
   };
 
   return (
     <div className="App">
-      <NavBar isGuessing={isGuessing} time={time} handleHint={handleGetHint} />
+      <NavBar
+        isGuessing={isGuessing}
+        time={time}
+        handleHint={handleGetHint}
+        display={displayHint}
+        lastHintTime={lastHintTime}
+      />
       <Title word={title} />
       {gameStart && (
         <GuessForm

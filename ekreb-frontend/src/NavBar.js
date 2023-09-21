@@ -4,10 +4,7 @@ import HintBtn from "./HintBtn";
 import { useState } from "react";
 import { HINT_SEC } from "./config";
 
-const NavBar = ({ isGuessing, time, handleHint }) => {
-  const [display, setDisplay] = useState(false);
-  const [lastHintTime, setLastHintTime] = useState(0);
-
+const NavBar = ({ isGuessing, time, handleHint, display, lastHintTime }) => {
   /**
    * Formats the time to be rendered
    * @param {Number} seconds the time in seconds to be formatted
@@ -21,23 +18,13 @@ const NavBar = ({ isGuessing, time, handleHint }) => {
 
   // Display the hint button 30 seconds after the user last asked for a hint
   if (!display && time - lastHintTime >= HINT_SEC) {
-    setDisplay(true);
+    display = true;
   }
-
-  /**
-   * Combines handler function passed in the props with functions to update states in
-   * this component
-   */
-  const handleGetHint = function () {
-    setLastHintTime(time);
-    setDisplay(false);
-    handleHint();
-  };
 
   return (
     <div className="navbar">
       {isGuessing && <Timer time={formatTime(time)} />}
-      {display && <HintBtn handleClick={handleGetHint} />}
+      {display && <HintBtn handleClick={handleHint} />}
       <StatsButton />
     </div>
   );

@@ -119,7 +119,7 @@ const GuessForm = ({
             id="user-guess"
             label={message}
             variant="outlined"
-            helperText={hint}
+            helperText={correct || hint}
             FormHelperTextProps={{
               sx: {
                 color: "azure",

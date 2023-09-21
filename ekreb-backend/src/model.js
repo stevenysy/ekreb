@@ -35,12 +35,9 @@ export const getWordData = async function (req, res) {
       data = await requestWord();
     }
 
-    const scrambledWord = scramble(data.word);
-    const hintWord = generateHintWord(data.word, scrambledWord);
     const word = {
       word: data.word,
-      scrambledWord: scrambledWord,
-      hintWord: hintWord,
+      scrambledWord: scramble(data.word),
       definition: data.results[0].definition,
       partOfSpeech: data.results[0].partOfSpeech,
       frequency: data.frequency,
@@ -95,15 +92,6 @@ const scramble = function (original) {
   if (scrambled === original) return scramble(scrambled);
 
   return scrambled;
-};
-
-const generateHintWord = function (original, scrambled) {
-  const firstLetter = original.charAt(0);
-  const scrambledArr = scrambled.split("");
-  scrambledArr.splice(scrambled.indexOf(firstLetter), 1);
-  const scrambledPart = scrambledArr.join("");
-
-  return firstLetter + scrambledPart;
 };
 
 /**

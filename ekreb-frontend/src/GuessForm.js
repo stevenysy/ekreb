@@ -96,6 +96,7 @@ const GuessForm = ({
   setText,
   error,
   correct,
+  hint,
 }) => {
   const outerTheme = useTheme();
 
@@ -118,7 +119,12 @@ const GuessForm = ({
             id="user-guess"
             label={message}
             variant="outlined"
-            // helperText={helperText}
+            helperText={hint}
+            FormHelperTextProps={{
+              sx: {
+                color: "azure",
+              },
+            }}
             sx={{ input: { color: "#E0E3E7" } }}
             onChange={(e) => {
               setText(e.target.value);

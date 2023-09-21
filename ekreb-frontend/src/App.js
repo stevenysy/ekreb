@@ -1,12 +1,12 @@
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import Title from "./Title";
 import GetWordBtn from "./GetWordBtn";
 import GuessForm from "./GuessForm";
 import LoadingText from "./LoadingText";
+import NavBar from "./NavBar";
 
 function App() {
   // states
-  const [title, setTitle] = useState("ekreb");
   const [word, setWord] = useState({
     word: "",
     scrambledWord: "",
@@ -14,13 +14,22 @@ function App() {
     partOfSpeech: "",
     frequency: "",
   });
+  const [title, setTitle] = useState("ekreb");
   const [gameStart, setGameStart] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
+  const [isGuessing, setIsGuessing] = useState(false);
   const [loadingText, setLoadingText] = useState("");
   const [guessText, setGuessText] = useState("");
   const [wrongGuess, setWrongGuess] = useState(false);
   const [correct, setCorrect] = useState(false);
   const [message, setMessage] = useState("Unscramble!");
+  const [time, setTime] = useState(0);
+  const timeRef = useRef();
+  const [timerId, setTimerId] = useState(0);
+  const [hintCount, setHintCount] = useState(0);
+  useEffect(() => {
+    timeRef.current = time;
+  }, [time]);
 
   /**
    * Renders a loading spinner with the message set to text
@@ -64,12 +73,26 @@ function App() {
       // update the states
       updateWord(data);
       setIsLoading(false);
+      setIsGuessing(true);
+      setHintCount(0);
       setTitle(data.scrambledWord);
       setGuessText("");
+      initTimer();
       if (!gameStart) setGameStart(true);
     } catch (err) {
       console.error(err);
     }
+  };
+
+  /**
+   * Initiates the timer
+   */
+  const initTimer = function () {
+    setTime(0);
+    const id = setInterval(() => {
+      setTime(timeRef.current + 1);
+    }, 1000);
+    setTimerId(id);
   };
 
   /**
@@ -89,7 +112,7 @@ function App() {
       const response = await fetch(
         `/api/v1/words?guess=${guess}&original=${
           word.word
-        }&time=10&score=${Math.pow(2, word.word.length)}`,
+        }&time=${time}&score=${Math.pow(2, word.word.length - hintCount)}`,
         requestOptions
       );
       const data = await response.json();
@@ -103,14 +126,35 @@ function App() {
         setCorrect(true);
         setMessage(`Correct!`);
         setTitle(guess);
+        clearInterval(timerId);
       }
     } catch (err) {
       console.error("Wrong guess! Try again :-)");
     }
   };
 
+  const handleGetHint = function () {
+    if (hintCount < word.word.length) setHintCount(hintCount + 1);
+  };
+
+  /**
+   * Formats the time to be rendered
+   * @param {Number} seconds the time in seconds to be formatted
+   * @returns the time formatted to {minutes}:{seconds}
+   */
+  const formatTime = function (seconds) {
+    const min = String(Math.trunc(time / 60)).padStart(2, 0);
+    const sec = String(time % 60).padStart(2, 0);
+    return `${min}:${sec}`;
+  };
+
   return (
     <div className="App">
+      <NavBar
+        isGuessing={isGuessing}
+        time={formatTime(time)}
+        handleHint={handleGetHint}
+      />
       <Title word={title} />
       {gameStart && (
         <GuessForm
@@ -120,6 +164,11 @@ function App() {
           error={wrongGuess}
           message={message}
           correct={correct}
+          hint={
+            hintCount !== 0
+              ? `The word starts with: ${word.word.substring(0, hintCount)}`
+              : ""
+          }
         />
       )}
       <GetWordBtn handleClick={handleGetWord} clicked={gameStart} />

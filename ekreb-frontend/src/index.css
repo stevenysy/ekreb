@@ -21,8 +21,8 @@ body {
   color: #f0ffff;
   font-size: 100px;
   align-items: center;
-  margin-top: 8rem;
-  gap: 8px
+  padding-top: 8rem;
+  gap: 8px;
 }
 
 @keyframes cursor-blink {
@@ -43,7 +43,7 @@ body {
 .buttons {
   display: flex;
   justify-content: center;
-  margin-top: 3rem;
+  padding-top: 3rem;
 }
 
 .textfield {
@@ -83,4 +83,47 @@ body {
   100% {
     transform: rotate(360deg);
   }
-} 
+}
+
+.navbar {
+  height: 2rem;
+}
+
+.buttons-stats {
+  position: absolute;
+  right: 0;
+  top: 0;
+  margin-top: 20px;
+  margin-left: 20px;
+  margin-right: 20px;
+}
+
+.buttons-hint {
+  position: absolute;
+  right: 0;
+  top: 0;
+  margin-top: 20px;
+  margin-left: 50px;
+  margin-right: 230px;
+}
+
+.timer {
+  display: inline-block;
+  margin-top: 20px;
+  margin-left: 20px;
+}
+
+.timer span {
+  position: relative;
+  color: azure;
+  font-weight: bold;
+  font-size: 20px;
+  padding-left: 10px;
+  bottom: 9px;
+}
+
+.icon {
+  width: 2rem;
+  height: 2rem;
+  fill: azure;
+}

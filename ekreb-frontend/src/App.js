@@ -137,24 +137,9 @@ function App() {
     if (hintCount < word.word.length) setHintCount(hintCount + 1);
   };
 
-  /**
-   * Formats the time to be rendered
-   * @param {Number} seconds the time in seconds to be formatted
-   * @returns the time formatted to {minutes}:{seconds}
-   */
-  const formatTime = function (seconds) {
-    const min = String(Math.trunc(time / 60)).padStart(2, 0);
-    const sec = String(time % 60).padStart(2, 0);
-    return `${min}:${sec}`;
-  };
-
   return (
     <div className="App">
-      <NavBar
-        isGuessing={isGuessing}
-        time={formatTime(time)}
-        handleHint={handleGetHint}
-      />
+      <NavBar isGuessing={isGuessing} time={time} handleHint={handleGetHint} />
       <Title word={title} />
       {gameStart && (
         <GuessForm

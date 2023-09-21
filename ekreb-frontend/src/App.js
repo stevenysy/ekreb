@@ -4,7 +4,6 @@ import GetWordBtn from "./GetWordBtn";
 import GuessForm from "./GuessForm";
 import LoadingText from "./LoadingText";
 import NavBar from "./NavBar";
-import { HINT_SEC } from "./config";
 
 function App() {
   // states
@@ -30,6 +29,8 @@ function App() {
   const [hintCount, setHintCount] = useState(0);
   const [displayHint, setDisplayHint] = useState(false);
   const [lastHintTime, setLastHintTime] = useState(0);
+
+  // cache the current time in order to increment the time every second
   useEffect(() => {
     timeRef.current = time;
   }, [time]);
@@ -66,29 +67,31 @@ function App() {
       redirect: "follow",
     };
     renderLoad("fetching a word...");
-    setCorrect(false);
-    setMessage("Press Enter to unscramble!");
-    clearInterval(timerId);
-    setTime(0);
-    setLastHintTime(0);
+    resetGame();
 
     try {
       const response = await fetch("/api/v1/words", requestOptions);
       const { data } = await response.json();
       console.log(data);
 
-      // update the states
-      updateWord(data);
-      setIsLoading(false);
-      setIsGuessing(true);
-      setHintCount(0);
-      setTitle(data.scrambledWord);
-      setGuessText("");
-      initTimer();
-      if (!gameStart) setGameStart(true);
+      initGame(data);
     } catch (err) {
       console.error(err);
     }
+  };
+
+  /**
+   * Resets the game:
+   * 1. set the correct state to false (the user has not guessed yet)
+   * 2. reset the textfield label to prompt the user to unscramble word
+   * 3. reset the timers
+   */
+  const resetGame = function () {
+    setCorrect(false);
+    setMessage("Press Enter to unscramble!");
+    clearInterval(timerId);
+    setTime(0);
+    setLastHintTime(0);
   };
 
   /**
@@ -100,6 +103,31 @@ function App() {
       setTime(timeRef.current + 1);
     }, 1000);
     setTimerId(id);
+  };
+
+  /**
+   * Initiates the game once a word has been fetched:
+   * 1. set the gameStart state to true if this is first time starting game to display
+   *    the guessing textfield
+   * 2. update the word state with the data received
+   * 3. set the isLoading state to false to hide the loding spinner
+   * 4. set the isGuessing state to true to display the timer
+   * 5. set the hintCount state to 0 to hide the hint
+   * 6. render the scrmbled word to the title
+   * 7. clear the guessing textfield
+   * 8. initiate the timer
+   * @param {Object} data the word data received from the API
+   */
+  const initGame = function (data) {
+    // update the states
+    if (!gameStart) setGameStart(true);
+    updateWord(data);
+    setIsLoading(false);
+    setIsGuessing(true);
+    setHintCount(0);
+    setTitle(data.scrambledWord);
+    setGuessText("");
+    initTimer();
   };
 
   /**
@@ -140,6 +168,9 @@ function App() {
     }
   };
 
+  /**
+   * Handles the event of the user asking for a guess
+   */
   const handleGetHint = function () {
     setLastHintTime(time);
     setDisplayHint(false);

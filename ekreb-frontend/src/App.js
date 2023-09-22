@@ -7,7 +7,8 @@ import NavBar from "./NavBar";
 import Modal from "./Modal";
 
 function App() {
-  // states
+  // ********************* States and State Update Functions *********************
+
   const [word, setWord] = useState({
     word: "",
     scrambledWord: "",
@@ -44,15 +45,6 @@ function App() {
   }, [time]);
 
   /**
-   * Renders a loading spinner with the message set to text
-   * @param {String} text the loading message to be displayed
-   */
-  const renderLoad = function (text) {
-    setIsLoading(true);
-    setLoadingText(text);
-  };
-
-  /**
    * Updates the word state
    * @param {Object} data the word data received from the API
    */
@@ -66,6 +58,10 @@ function App() {
     });
   };
 
+  /**
+   * Updates the user's game stats
+   * @param {Object} data the user's game stats returned by the API
+   */
   const updateStats = function (data) {
     setStats({
       score: data.data.score,
@@ -74,6 +70,8 @@ function App() {
       avgUnscrambleTime: formatTime(data.data.avgUnscrambleTime),
     });
   };
+
+  // ****************************** Event Handlers ******************************
 
   /**
    * Handles the click event on the "get word" button
@@ -98,6 +96,50 @@ function App() {
   };
 
   /**
+   * Handles the submit event of the user's guess
+   * @param {String} guess the user's guess
+   */
+  const handleSubmitGuess = async function (guess) {
+    // make PATCH request to the API with the guess, original word, time, and score data
+    const requestOptions = {
+      method: "PATCH",
+      redirect: "follow",
+    };
+    try {
+      const response = await fetch(
+        `/api/v1/words?guess=${guess}&original=${
+          word.word
+        }&time=${time}&score=${Math.pow(2, word.word.length - hintCount)}`,
+        requestOptions
+      );
+      const data = await response.json();
+      console.log(data);
+
+      if (!data.data) {
+        // guess is wrong
+        setWrongGuess(true);
+        setMessage("Wrong guess! Try again!");
+      } else {
+        // guess is correct
+        setCorrectGuess(guess, data);
+      }
+    } catch (err) {
+      console.error("Wrong guess! Try again :-)");
+    }
+  };
+
+  /**
+   * Handles the event of the user asking for a guess
+   */
+  const handleGetHint = function () {
+    setLastHintTime(time);
+    setDisplayHint(false);
+    if (hintCount < word.word.length) setHintCount(hintCount + 1);
+  };
+
+  // ****************************** Helper Functions ******************************
+
+  /**
    * Helper function that resets the counters for:
    * 1. the time of the last hint
    * 2. the hint count
@@ -107,6 +149,15 @@ function App() {
     setLastHintTime(0);
     setHintCount(0);
     clearInterval(timerId);
+  };
+
+  /**
+   * Renders a loading spinner with the message set to text
+   * @param {String} text the loading message to be displayed
+   */
+  const renderLoad = function (text) {
+    setIsLoading(true);
+    setLoadingText(text);
   };
 
   /**
@@ -159,39 +210,6 @@ function App() {
   };
 
   /**
-   * Handles the submit event of the user's guess
-   * @param {String} guess the user's guess
-   */
-  const handleSubmitGuess = async function (guess) {
-    // make PATCH request to the API with the guess, original word, time, and score data
-    const requestOptions = {
-      method: "PATCH",
-      redirect: "follow",
-    };
-    try {
-      const response = await fetch(
-        `/api/v1/words?guess=${guess}&original=${
-          word.word
-        }&time=${time}&score=${Math.pow(2, word.word.length - hintCount)}`,
-        requestOptions
-      );
-      const data = await response.json();
-      console.log(data);
-
-      if (!data.data) {
-        // guess is wrong
-        setWrongGuess(true);
-        setMessage("Wrong guess! Try again!");
-      } else {
-        // guess is correct
-        handleCorrectGuess(guess, data);
-      }
-    } catch (err) {
-      console.error("Wrong guess! Try again :-)");
-    }
-  };
-
-  /**
    * Helper function that manipulates state variables when the user enters a correct guess:
    * 1. set the wrongGuess state to false and the correct state to true to change textfield color
    * 2. set the textfield label to "Correct 🎉"
@@ -200,7 +218,7 @@ function App() {
    * 5. stop the timer
    * @param {String} guess the user's guess
    */
-  const handleCorrectGuess = function (guess, data) {
+  const setCorrectGuess = function (guess, data) {
     setWrongGuess(false);
     setCorrect(true);
     setMessage(`Correct 🎉`);
@@ -209,17 +227,6 @@ function App() {
     setTitle(guess);
     updateStats(data);
     clearInterval(timerId);
-  };
-
-  // const handleShowStats = function () {};
-
-  /**
-   * Handles the event of the user asking for a guess
-   */
-  const handleGetHint = function () {
-    setLastHintTime(time);
-    setDisplayHint(false);
-    if (hintCount < word.word.length) setHintCount(hintCount + 1);
   };
 
   return (

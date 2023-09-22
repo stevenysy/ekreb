@@ -4,6 +4,7 @@ import GetWordBtn from "./GetWordBtn";
 import GuessForm from "./GuessForm";
 import LoadingText from "./LoadingText";
 import NavBar from "./NavBar";
+import Modal from "./Modal";
 
 function App() {
   // states
@@ -13,6 +14,12 @@ function App() {
     definition: "",
     partOfSpeech: "",
     frequency: "",
+  });
+  const [stats, setStats] = useState({
+    score: 0,
+    wordsGuessed: 0,
+    totalTime: "00:00",
+    avgUnscrambleTime: "00:00",
   });
   const [title, setTitle] = useState("ekreb");
   const [gameStart, setGameStart] = useState(false);
@@ -29,6 +36,7 @@ function App() {
   const [hintCount, setHintCount] = useState(0);
   const [displayHint, setDisplayHint] = useState(false);
   const [lastHintTime, setLastHintTime] = useState(0);
+  const [displayStats, setDisplayStats] = useState(false);
 
   // cache the current time in order to increment the time every second
   useEffect(() => {
@@ -58,6 +66,15 @@ function App() {
     });
   };
 
+  const updateStats = function (data) {
+    setStats({
+      score: data.data.score,
+      wordsGuessed: data.data.wordsGuessed,
+      totalTime: formatTime(data.data.totalTime),
+      avgUnscrambleTime: formatTime(data.data.avgUnscrambleTime),
+    });
+  };
+
   /**
    * Handles the click event on the "get word" button
    */
@@ -68,6 +85,7 @@ function App() {
     };
     renderLoad("fetching a word...");
     resetCounters();
+    console.log(stats);
     try {
       const response = await fetch("/api/v1/words", requestOptions);
       const { data } = await response.json();
@@ -100,6 +118,17 @@ function App() {
       setTime(timeRef.current + 1);
     }, 1000);
     setTimerId(id);
+  };
+
+  /**
+   * Formats the time to be rendered
+   * @param {Number} seconds the time in seconds to be formatted
+   * @returns the time formatted to {minutes}:{seconds}
+   */
+  const formatTime = function (seconds) {
+    const min = String(Math.trunc(seconds / 60)).padStart(2, 0);
+    const sec = String(seconds % 60).padStart(2, 0);
+    return `${min}:${sec}`;
   };
 
   /**
@@ -155,7 +184,7 @@ function App() {
         setMessage("Wrong guess! Try again!");
       } else {
         // guess is correct
-        handleCorrectGuess(guess);
+        handleCorrectGuess(guess, data);
       }
     } catch (err) {
       console.error("Wrong guess! Try again :-)");
@@ -171,15 +200,18 @@ function App() {
    * 5. stop the timer
    * @param {String} guess the user's guess
    */
-  const handleCorrectGuess = function (guess) {
+  const handleCorrectGuess = function (guess, data) {
     setWrongGuess(false);
     setCorrect(true);
     setMessage(`Correct 🎉`);
     setIsGuessing(false);
     setDisplayHint(false);
     setTitle(guess);
+    updateStats(data);
     clearInterval(timerId);
   };
+
+  // const handleShowStats = function () {};
 
   /**
    * Handles the event of the user asking for a guess
@@ -195,10 +227,14 @@ function App() {
       <NavBar
         isGuessing={isGuessing}
         time={time}
+        formatTime={formatTime}
         handleHint={handleGetHint}
         display={displayHint}
         lastHintTime={lastHintTime}
         gameStart={gameStart}
+        handleStats={() => {
+          setDisplayStats(true);
+        }}
       />
       <Title word={title} />
       {gameStart && (
@@ -218,6 +254,9 @@ function App() {
       )}
       <GetWordBtn handleClick={handleGetWord} clicked={gameStart} />
       {isLoading && <LoadingText text={loadingText} />}
+      {displayStats && (
+        <Modal stats={stats} closeModal={() => setDisplayStats(false)} />
+      )}
     </div>
   );
 }

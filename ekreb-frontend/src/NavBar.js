@@ -6,22 +6,13 @@ import { HINT_SEC } from "./config";
 const NavBar = ({
   isGuessing,
   time,
+  formatTime,
   handleHint,
   display,
   lastHintTime,
   gameStart,
+  handleStats,
 }) => {
-  /**
-   * Formats the time to be rendered
-   * @param {Number} seconds the time in seconds to be formatted
-   * @returns the time formatted to {minutes}:{seconds}
-   */
-  const formatTime = function (seconds) {
-    const min = String(Math.trunc(seconds / 60)).padStart(2, 0);
-    const sec = String(seconds % 60).padStart(2, 0);
-    return `${min}:${sec}`;
-  };
-
   // Display the hint button 30 seconds after the user last asked for a hint
   if (isGuessing && !display && time - lastHintTime >= HINT_SEC) {
     display = true;
@@ -31,7 +22,7 @@ const NavBar = ({
     <div className="navbar">
       {gameStart && <Timer time={formatTime(time)} />}
       {display && <HintBtn handleClick={handleHint} />}
-      <StatsButton />
+      {gameStart && <StatsButton handleClick={handleStats} />}
     </div>
   );
 };

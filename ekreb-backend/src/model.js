@@ -35,9 +35,6 @@ export const getWordData = async function (req, res) {
     const word = {
       word: data.word,
       scrambledWord: scramble(data.word),
-      definition: data.results[0].definition,
-      partOfSpeech: data.results[0].partOfSpeech,
-      frequency: data.frequency,
     };
 
     res.json({ status: "success", data: word });

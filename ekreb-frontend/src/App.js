@@ -81,16 +81,14 @@ function App() {
 
   /**
    * Helper function that resets the counters for:
-   * 1. the time
-   * 2. the time of the last hint
-   * 3. the hint count
-   * 4. the timer
+   * 1. the time of the last hint
+   * 2. the hint count
+   * 3. the timer
    */
   const resetCounters = function () {
-    clearInterval(timerId);
-    setTime(0);
     setLastHintTime(0);
     setHintCount(0);
+    clearInterval(timerId);
   };
 
   /**

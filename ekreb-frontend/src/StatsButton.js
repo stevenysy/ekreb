@@ -27,7 +27,7 @@ const StatsButton = ({ handleClick }) => {
     <div className="buttons-stats">
       <ThemeProvider theme={theme}>
         <Button variant="contained" className="stats" onClick={handleClick}>
-          {`see my stats`}
+          {`📈 stats`}
         </Button>
       </ThemeProvider>
     </div>

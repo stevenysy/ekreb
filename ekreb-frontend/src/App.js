@@ -177,7 +177,6 @@ function App() {
 
     const response = await fetch("/api/v1/stats", requestOptions);
     const { data } = await response.json();
-    console.log(data);
     updateStats(data);
   };
 

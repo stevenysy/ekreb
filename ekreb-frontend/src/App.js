@@ -55,13 +55,12 @@ function App() {
   useEffect(() => {
     if (!timeUp) return;
 
-    console.log("Time is up!");
     clearInterval(timerId);
     setDisplayHint(false);
     setIsGuessing(false);
     setWrongGuess(true);
     setDisableGuess(true);
-    setMessage("Time is up 💥");
+    setMessage("time's up 💥");
     setTitle(word.word);
   }, [timeUp, timerId, word.word]);
 
@@ -133,12 +132,11 @@ function App() {
         requestOptions
       );
       const data = await response.json();
-      console.log(data);
 
       if (!data.data) {
         // guess is wrong
         setWrongGuess(true);
-        setMessage("Wrong guess! Try again!");
+        setMessage("wrong guess! try again!");
       } else {
         // guess is correct
         setCorrectGuess(guess, data);
@@ -242,7 +240,7 @@ function App() {
   const setCorrectGuess = function (guess, data) {
     setWrongGuess(false);
     setDisableGuess(true);
-    setMessage(`Correct 🎉`);
+    setMessage(`correct 🎉`);
     setIsGuessing(false);
     setDisplayHint(false);
     setTitle(guess);

@@ -68,7 +68,6 @@ function App() {
     };
     renderLoad("fetching a word...");
     resetCounters();
-
     try {
       const response = await fetch("/api/v1/words", requestOptions);
       const { data } = await response.json();
@@ -137,15 +136,11 @@ function App() {
    * @param {String} guess the user's guess
    */
   const handleSubmitGuess = async function (guess) {
-    console.log(guess);
-    console.log(word);
-
     // make PATCH request to the API with the guess, original word, time, and score data
     const requestOptions = {
       method: "PATCH",
       redirect: "follow",
     };
-
     try {
       const response = await fetch(
         `/api/v1/words?guess=${guess}&original=${
@@ -169,13 +164,22 @@ function App() {
     }
   };
 
+  /**
+   * Helper function that manipulates state variables when the user enters a correct guess:
+   * 1. set the wrongGuess state to false and the correct state to true to change textfield color
+   * 2. set the textfield label to "Correct 🎉"
+   * 3. set the isGuessing and displayHint states to false to hide hint button
+   * 4. set the title to the correct word
+   * 5. stop the timer
+   * @param {String} guess the user's guess
+   */
   const handleCorrectGuess = function (guess) {
     setWrongGuess(false);
     setCorrect(true);
-    setMessage(`Correct!`);
+    setMessage(`Correct 🎉`);
     setIsGuessing(false);
-    setTitle(guess);
     setDisplayHint(false);
+    setTitle(guess);
     clearInterval(timerId);
   };
 

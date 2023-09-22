@@ -30,10 +30,7 @@ export const updateState = function (time, score) {
  */
 export const getWordData = async function (req, res) {
   try {
-    let data = await requestWord();
-    while (!data.frequency) {
-      data = await requestWord();
-    }
+    const data = await requestWord();
 
     const word = {
       word: data.word,

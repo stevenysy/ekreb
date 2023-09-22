@@ -1,7 +1,6 @@
 import Timer from "./Timer";
 import StatsButton from "./StatsButton";
 import HintBtn from "./HintBtn";
-import { useState } from "react";
 import { HINT_SEC } from "./config";
 
 const NavBar = ({ isGuessing, time, handleHint, display, lastHintTime }) => {
@@ -17,7 +16,7 @@ const NavBar = ({ isGuessing, time, handleHint, display, lastHintTime }) => {
   };
 
   // Display the hint button 30 seconds after the user last asked for a hint
-  if (!display && time - lastHintTime >= HINT_SEC) {
+  if (isGuessing && !display && time - lastHintTime >= HINT_SEC) {
     display = true;
   }
 

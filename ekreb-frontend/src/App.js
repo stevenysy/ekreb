@@ -88,10 +88,11 @@ function App() {
    */
   const resetGame = function () {
     setCorrect(false);
-    setMessage("Press Enter to unscramble!");
+    setMessage("hit enter to unscramble!");
     clearInterval(timerId);
     setTime(0);
     setLastHintTime(0);
+    setHintCount(0);
   };
 
   /**
@@ -115,7 +116,8 @@ function App() {
    * 5. set the hintCount state to 0 to hide the hint
    * 6. render the scrmbled word to the title
    * 7. clear the guessing textfield
-   * 8. initiate the timer
+   * 8. set the wrongGuess state to false
+   * 9. initiate the timer
    * @param {Object} data the word data received from the API
    */
   const initGame = function (data) {
@@ -124,9 +126,9 @@ function App() {
     updateWord(data);
     setIsLoading(false);
     setIsGuessing(true);
-    setHintCount(0);
     setTitle(data.scrambledWord);
     setGuessText("");
+    setWrongGuess(false);
     initTimer();
   };
 
@@ -160,7 +162,9 @@ function App() {
         setWrongGuess(false);
         setCorrect(true);
         setMessage(`Correct!`);
+        setIsGuessing(false);
         setTitle(guess);
+        setDisplayHint(false);
         clearInterval(timerId);
       }
     } catch (err) {

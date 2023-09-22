@@ -2,4 +2,4 @@
 export const HINT_SEC = 30;
 
 // time allowed for unscrambling each word
-export const TIME_LIMIT_SEC = 180;
+export const TIME_LIMIT_SEC = 120;

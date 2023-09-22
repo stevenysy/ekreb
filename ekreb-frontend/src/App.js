@@ -13,9 +13,6 @@ function App() {
   const [word, setWord] = useState({
     word: "",
     scrambledWord: "",
-    definition: "",
-    partOfSpeech: "",
-    frequency: "",
   });
   const [stats, setStats] = useState({
     score: 0,
@@ -49,11 +46,22 @@ function App() {
   }, [time]);
 
   // Monitors the timer. When the time is up:
-  // 1. display the correct word
-  // 2. disable the guessing textfield
-  // 3. render error
+  // 1. update the time in the user stats and PATCH the new time to the backend
+  // 2. display the correct word
+  // 3. disable the guessing textfield
+  // 4. render error
   useEffect(() => {
     if (!timeUp) return;
+
+    const requestOptions = {
+      method: "PATCH",
+      redirect: "follow",
+    };
+
+    fetch(`/api/v1/stats/time?time=${time}`, requestOptions)
+      .then((response) => response.json())
+      .then((data) => updateStats(data.data))
+      .catch((err) => console.error(err));
 
     clearInterval(timerId);
     setDisplayHint(false);
@@ -62,7 +70,8 @@ function App() {
     setDisableGuess(true);
     setMessage("time's up 💥");
     setTitle(word.word);
-  }, [timeUp, timerId, word.word]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [time, timeUp, timerId, word]);
 
   /**
    * Updates the word state
@@ -84,10 +93,10 @@ function App() {
    */
   const updateStats = function (data) {
     setStats({
-      score: data.data.score,
-      wordsGuessed: data.data.wordsGuessed,
-      totalTime: formatTime(data.data.totalTime),
-      avgUnscrambleTime: formatTime(data.data.avgUnscrambleTime),
+      score: data.score,
+      wordsGuessed: data.wordsGuessed,
+      totalTime: formatTime(data.totalTime),
+      avgUnscrambleTime: formatTime(data.avgUnscrambleTime),
     });
   };
 
@@ -131,9 +140,9 @@ function App() {
         }&time=${time}&score=${Math.pow(2, word.word.length - hintCount)}`,
         requestOptions
       );
-      const data = await response.json();
+      const { data } = await response.json();
 
-      if (!data.data) {
+      if (!data) {
         // guess is wrong
         setWrongGuess(true);
         setMessage("wrong guess! try again!");
@@ -156,6 +165,21 @@ function App() {
   };
 
   // ****************************** Helper Functions ******************************
+
+  /**
+   * Helper function that makes a GET request to the API to fetch the user stats
+   */
+  const getUserStats = async function () {
+    const requestOptions = {
+      method: "GET",
+      redirect: "follow",
+    };
+
+    const response = await fetch("/api/v1/stats", requestOptions);
+    const { data } = await response.json();
+    console.log(data);
+    updateStats(data);
+  };
 
   /**
    * Helper function that resets the counters for:
@@ -204,6 +228,7 @@ function App() {
    * Helper function that initiates the game once a word has been fetched:
    * 1. set the gameStart state to true if this is first time starting game to display
    *    the guessing textfield
+   * 2. get the user stats from the API: so that stats is not empty after refreshing the page
    * 2. update the word state with the data received
    * 3. set the isLoading state to false to hide the loding spinner
    * 4. set the isGuessing state to true to display the timer
@@ -216,6 +241,7 @@ function App() {
    */
   const initGame = function (data) {
     if (!gameStart) setGameStart(true);
+    getUserStats();
     setTimeUp(false);
     setDisableGuess(false);
     setMessage("type here and enter!");
@@ -248,6 +274,8 @@ function App() {
     clearInterval(timerId);
   };
 
+  // returns the JSX of the user UI
+  // the guess textfield, loading text, and stats modal are conditionally rendered
   return (
     <div className="App">
       <NavBar

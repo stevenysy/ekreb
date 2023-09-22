@@ -3,7 +3,14 @@ import StatsButton from "./StatsButton";
 import HintBtn from "./HintBtn";
 import { HINT_SEC } from "./config";
 
-const NavBar = ({ isGuessing, time, handleHint, display, lastHintTime }) => {
+const NavBar = ({
+  isGuessing,
+  time,
+  handleHint,
+  display,
+  lastHintTime,
+  gameStart,
+}) => {
   /**
    * Formats the time to be rendered
    * @param {Number} seconds the time in seconds to be formatted
@@ -22,7 +29,7 @@ const NavBar = ({ isGuessing, time, handleHint, display, lastHintTime }) => {
 
   return (
     <div className="navbar">
-      {isGuessing && <Timer time={formatTime(time)} />}
+      {gameStart && <Timer time={formatTime(time)} />}
       {display && <HintBtn handleClick={handleHint} />}
       <StatsButton />
     </div>

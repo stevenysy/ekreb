@@ -67,7 +67,7 @@ function App() {
       redirect: "follow",
     };
     renderLoad("fetching a word...");
-    resetGame();
+    resetCounters();
 
     try {
       const response = await fetch("/api/v1/words", requestOptions);
@@ -81,14 +81,13 @@ function App() {
   };
 
   /**
-   * Resets the game:
-   * 1. set the correct state to false (the user has not guessed yet)
-   * 2. reset the textfield label to prompt the user to unscramble word
-   * 3. reset the timers
+   * Helper function that resets the counters for:
+   * 1. the time
+   * 2. the time of the last hint
+   * 3. the hint count
+   * 4. the timer
    */
-  const resetGame = function () {
-    setCorrect(false);
-    setMessage("hit enter to unscramble!");
+  const resetCounters = function () {
     clearInterval(timerId);
     setTime(0);
     setLastHintTime(0);
@@ -96,7 +95,7 @@ function App() {
   };
 
   /**
-   * Initiates the timer
+   * Helper function that initiates the timer
    */
   const initTimer = function () {
     setTime(0);
@@ -107,7 +106,7 @@ function App() {
   };
 
   /**
-   * Initiates the game once a word has been fetched:
+   * Helper function that initiates the game once a word has been fetched:
    * 1. set the gameStart state to true if this is first time starting game to display
    *    the guessing textfield
    * 2. update the word state with the data received
@@ -121,8 +120,9 @@ function App() {
    * @param {Object} data the word data received from the API
    */
   const initGame = function (data) {
-    // update the states
     if (!gameStart) setGameStart(true);
+    setCorrect(false);
+    setMessage("hit enter to unscramble!");
     updateWord(data);
     setIsLoading(false);
     setIsGuessing(true);
@@ -140,6 +140,7 @@ function App() {
     console.log(guess);
     console.log(word);
 
+    // make PATCH request to the API with the guess, original word, time, and score data
     const requestOptions = {
       method: "PATCH",
       redirect: "follow",
@@ -156,20 +157,26 @@ function App() {
       console.log(data);
 
       if (!data.data) {
+        // guess is wrong
         setWrongGuess(true);
         setMessage("Wrong guess! Try again!");
       } else {
-        setWrongGuess(false);
-        setCorrect(true);
-        setMessage(`Correct!`);
-        setIsGuessing(false);
-        setTitle(guess);
-        setDisplayHint(false);
-        clearInterval(timerId);
+        // guess is correct
+        handleCorrectGuess(guess);
       }
     } catch (err) {
       console.error("Wrong guess! Try again :-)");
     }
+  };
+
+  const handleCorrectGuess = function (guess) {
+    setWrongGuess(false);
+    setCorrect(true);
+    setMessage(`Correct!`);
+    setIsGuessing(false);
+    setTitle(guess);
+    setDisplayHint(false);
+    clearInterval(timerId);
   };
 
   /**
@@ -189,6 +196,7 @@ function App() {
         handleHint={handleGetHint}
         display={displayHint}
         lastHintTime={lastHintTime}
+        gameStart={gameStart}
       />
       <Title word={title} />
       {gameStart && (

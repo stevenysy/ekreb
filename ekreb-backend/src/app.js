@@ -3,14 +3,20 @@ import * as model from "./model.js";
 import cors from "cors";
 
 const app = express();
+
+// middlewares
 app.use(cors());
 app.use(express.json());
 
 // endpoint for GET request to get a random scrambled word
 app.get("/api/v1/words", [model.getWordData]);
 
-//////////////////////////////////////////////////////////
-// endpoint to handle PATCH request for the frontend to send the user's guess
+// endpoint for GET request to get the user's stats
+app.get("/api/v1/stats", (req, res) => {
+  res.json({ status: "success", data: model.userState });
+});
+
+// endpoint for PATCH request to send the user's guess
 app.patch("/api/v1/words", async (req, res) => {
   const { guess, original, time, score } = req.query;
 
@@ -27,11 +33,11 @@ app.patch("/api/v1/words", async (req, res) => {
   }
 });
 
-app.patch("/api/v1/score", (req, res) => {
-  console.log("score before:", model.userState.score);
-  model.userState.score += parseInt(req.query.val);
-  console.log("score after:", model.userState.score);
-  res.json(`${model.userState.score}`);
+// endpoint for PATCH request to update just the total guessing time
+app.patch("/api/v1/stats/time", (req, res) => {
+  const { time } = req.query;
+  model.updateTime(time);
+  res.json({ status: "success", data: model.userState });
 });
 
 app.use((req, res, next) => {

@@ -16,10 +16,21 @@ export const userState = {
 export const updateState = function (time, score) {
   userState.wordsGuessed++;
   userState.score += parseInt(score);
+  updateTime(time);
+};
+
+/**
+ * Updates the user's time data only, used when time's up
+ * @param {String} time time in seconds to be added to the user's total time
+ */
+export const updateTime = function (time) {
   userState.totalTime += parseInt(time);
-  userState.avgUnscrambleTime = Math.round(
-    userState.totalTime / userState.wordsGuessed
-  );
+
+  if (userState.wordsGuessed) {
+    userState.avgUnscrambleTime = Math.round(
+      userState.totalTime / userState.wordsGuessed
+    );
+  }
 };
 
 /**
@@ -44,28 +55,6 @@ export const getWordData = async function (req, res) {
 };
 
 /**
- * Calls a word dictionary API to get a random word
- * @returns object containing data of the word returned from the dictionary API
- */
-const requestWord = async function () {
-  const { data } = await axios.request({
-    method: "GET",
-    url: `${WORD_URL}`,
-    params: {
-      random: "true",
-      lettersMax: `${WORDS_MAX_LEN}`,
-      hasDetails: "definitions",
-    },
-    headers: {
-      "X-RapidAPI-Key": "53560c708amsh7574e0f3f7ee562p1baadajsn5ad54f952a63",
-      "X-RapidAPI-Host": "wordsapiv1.p.rapidapi.com",
-    },
-  });
-
-  return data;
-};
-
-/**
  * Helper function that scrambles the word passed in
  * @param {String} original the original, unscrambled word
  * @returns a scrambled version of the original word
@@ -86,6 +75,28 @@ const scramble = function (original) {
   if (scrambled === original) return scramble(scrambled);
 
   return scrambled;
+};
+
+/**
+ * Calls a word dictionary API to get a random word
+ * @returns object containing data of the word returned from the dictionary API
+ */
+const requestWord = async function () {
+  const { data } = await axios.request({
+    method: "GET",
+    url: `${WORD_URL}`,
+    params: {
+      random: "true",
+      lettersMax: `${WORDS_MAX_LEN}`,
+      hasDetails: "definitions",
+    },
+    headers: {
+      "X-RapidAPI-Key": "53560c708amsh7574e0f3f7ee562p1baadajsn5ad54f952a63",
+      "X-RapidAPI-Host": "wordsapiv1.p.rapidapi.com",
+    },
+  });
+
+  return data;
 };
 
 /**

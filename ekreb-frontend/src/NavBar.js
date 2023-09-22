@@ -1,7 +1,7 @@
 import Timer from "./Timer";
 import StatsButton from "./StatsButton";
 import HintBtn from "./HintBtn";
-import { HINT_SEC } from "./config";
+import { HINT_SEC, TIME_LIMIT_SEC } from "./config";
 
 const NavBar = ({
   isGuessing,
@@ -20,7 +20,7 @@ const NavBar = ({
 
   return (
     <div className="navbar">
-      {gameStart && <Timer time={formatTime(time)} />}
+      {gameStart && <Timer time={formatTime(TIME_LIMIT_SEC - time)} />}
       {display && <HintBtn handleClick={handleHint} />}
       {gameStart && <StatsButton handleClick={handleStats} />}
     </div>

@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from "react";
+import { TIME_LIMIT_SEC } from "./config";
 import Title from "./Title";
 import GetWordBtn from "./GetWordBtn";
 import GuessForm from "./GuessForm";
@@ -29,20 +30,40 @@ function App() {
   const [loadingText, setLoadingText] = useState("");
   const [guessText, setGuessText] = useState("");
   const [wrongGuess, setWrongGuess] = useState(false);
-  const [correct, setCorrect] = useState(false);
+  const [disableGuess, setDisableGuess] = useState(false);
   const [message, setMessage] = useState("Unscramble!");
   const [time, setTime] = useState(0);
   const timeRef = useRef();
   const [timerId, setTimerId] = useState(0);
+  const [timeUp, setTimeUp] = useState(false);
   const [hintCount, setHintCount] = useState(0);
   const [displayHint, setDisplayHint] = useState(false);
   const [lastHintTime, setLastHintTime] = useState(0);
   const [displayStats, setDisplayStats] = useState(false);
 
   // cache the current time in order to increment the time every second
+  // set timeUp state to true if the time reached the time limit
   useEffect(() => {
     timeRef.current = time;
+    if (time === TIME_LIMIT_SEC) setTimeUp(true);
   }, [time]);
+
+  // Monitors the timer. When the time is up:
+  // 1. display the correct word
+  // 2. disable the guessing textfield
+  // 3. render error
+  useEffect(() => {
+    if (!timeUp) return;
+
+    console.log("Time is up!");
+    clearInterval(timerId);
+    setDisplayHint(false);
+    setIsGuessing(false);
+    setWrongGuess(true);
+    setDisableGuess(true);
+    setMessage("Time is up 💥");
+    setTitle(word.word);
+  }, [timeUp, timerId, word.word]);
 
   /**
    * Updates the word state
@@ -83,7 +104,6 @@ function App() {
     };
     renderLoad("fetching a word...");
     resetCounters();
-    console.log(stats);
     try {
       const response = await fetch("/api/v1/words", requestOptions);
       const { data } = await response.json();
@@ -198,7 +218,8 @@ function App() {
    */
   const initGame = function (data) {
     if (!gameStart) setGameStart(true);
-    setCorrect(false);
+    setTimeUp(false);
+    setDisableGuess(false);
     setMessage("hit enter to unscramble!");
     updateWord(data);
     setIsLoading(false);
@@ -220,7 +241,7 @@ function App() {
    */
   const setCorrectGuess = function (guess, data) {
     setWrongGuess(false);
-    setCorrect(true);
+    setDisableGuess(true);
     setMessage(`Correct 🎉`);
     setIsGuessing(false);
     setDisplayHint(false);
@@ -251,7 +272,7 @@ function App() {
           setText={setGuessText}
           error={wrongGuess}
           message={message}
-          correct={correct}
+          disabled={disableGuess}
           hint={
             hintCount !== 0
               ? `The word starts with: ${word.word.substring(0, hintCount)}`

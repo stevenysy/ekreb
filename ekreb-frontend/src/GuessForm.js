@@ -15,6 +15,7 @@ const customTheme = (outerTheme) =>
             "--TextField-brandBorderHoverColor": "#B2BAC2",
             "--TextField-brandBorderFocusedColor": "#E0E3E7",
             "--TextField-brandBorderCorrectColor": "#399E27",
+            "--TextField-brandBorderErrorColor": "#b82c23",
             "& label:not(.Mui-disabled, .Mui-error)": {
               color: "var(--TextField-brandBorderColor)",
             },
@@ -24,7 +25,7 @@ const customTheme = (outerTheme) =>
             "& label.Mui-focused:not(.Mui-disabled, .Mui-error)": {
               color: "var(--TextField-brandBorderFocusedColor)",
             },
-            "& label.Mui-disabled": {
+            "& label.Mui-disabled:not(.Mui-error)": {
               color: "var(--TextField-brandBorderCorrectColor)",
             },
           },
@@ -45,8 +46,12 @@ const customTheme = (outerTheme) =>
                 borderColor: "var(--TextField-brandBorderFocusedColor)",
               },
             [`&.Mui-disabled .${outlinedInputClasses.notchedOutline}`]: {
-              borderColor: "var(--TextField-brandBorderCorrectColor)",
+              borderColor: "var(--TextField-brandBorderErrorColor)",
             },
+            [`&.Mui-disabled:not(.Mui-error) .${outlinedInputClasses.notchedOutline}`]:
+              {
+                borderColor: "var(--TextField-brandBorderCorrectColor)",
+              },
           },
         },
       },
@@ -95,7 +100,7 @@ const GuessForm = ({
   text,
   setText,
   error,
-  correct,
+  disabled,
   hint,
 }) => {
   const outerTheme = useTheme();
@@ -115,11 +120,11 @@ const GuessForm = ({
           <TextField
             value={text}
             error={error}
-            disabled={correct}
+            disabled={disabled}
             id="user-guess"
             label={message}
             variant="outlined"
-            helperText={correct ? "" : hint}
+            helperText={disabled ? "" : hint}
             FormHelperTextProps={{
               sx: {
                 color: "azure",

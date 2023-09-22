@@ -31,7 +31,7 @@ function App() {
   const [guessText, setGuessText] = useState("");
   const [wrongGuess, setWrongGuess] = useState(false);
   const [disableGuess, setDisableGuess] = useState(false);
-  const [message, setMessage] = useState("Unscramble!");
+  const [message, setMessage] = useState("type here and enter!");
   const [time, setTime] = useState(0);
   const timeRef = useRef();
   const [timerId, setTimerId] = useState(0);
@@ -220,7 +220,7 @@ function App() {
     if (!gameStart) setGameStart(true);
     setTimeUp(false);
     setDisableGuess(false);
-    setMessage("hit enter to unscramble!");
+    setMessage("type here and enter!");
     updateWord(data);
     setIsLoading(false);
     setIsGuessing(true);

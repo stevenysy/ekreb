@@ -115,7 +115,6 @@ function App() {
     try {
       const response = await fetch("/api/v1/words", requestOptions);
       const { data } = await response.json();
-      console.log(data);
 
       initGame(data);
     } catch (err) {
@@ -137,7 +136,7 @@ function App() {
       const response = await fetch(
         `/api/v1/words?guess=${guess}&original=${
           word.word
-        }&time=${time}&score=${Math.pow(2, word.word.length - hintCount)}`,
+        }&time=${time}&score=${calcScore()}`,
         requestOptions
       );
       const { data } = await response.json();
@@ -213,7 +212,7 @@ function App() {
   };
 
   /**
-   * Formats the time to be rendered
+   * Helper function that formats the time to be rendered
    * @param {Number} seconds the time in seconds to be formatted
    * @returns the time formatted to {minutes}:{seconds}
    */
@@ -221,6 +220,15 @@ function App() {
     const min = String(Math.trunc(seconds / 60)).padStart(2, 0);
     const sec = String(seconds % 60).padStart(2, 0);
     return `${min}:${sec}`;
+  };
+
+  /**
+   * Helper function that calculates the score based on the word length and the number
+   * of hints obtained
+   * @returns the calculated score
+   */
+  const calcScore = function () {
+    return Math.pow(2, word.word.length - hintCount);
   };
 
   /**

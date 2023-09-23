@@ -25,7 +25,6 @@ app.patch("/api/v1/words", async (req, res) => {
   if (correct) {
     // update the score and the totalTime counter with the total time spent this round
     model.updateState(time, score);
-    console.log(model.userState);
 
     res.json({ status: "correct!", data: model.userState });
   } else {

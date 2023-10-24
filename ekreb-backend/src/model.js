@@ -1,5 +1,5 @@
 import axios from "axios";
-import { WORDS_MAX_LEN, WORD_URL } from "./config.js";
+import { WORDS_MAX_LEN, WORD_URL, API_KEY } from "./config.js";
 
 export const userState = {
   score: 0,
@@ -91,7 +91,7 @@ const requestWord = async function () {
       hasDetails: "definitions",
     },
     headers: {
-      "X-RapidAPI-Key": "53560c708amsh7574e0f3f7ee562p1baadajsn5ad54f952a63",
+      "X-RapidAPI-Key": API_KEY,
       "X-RapidAPI-Host": "wordsapiv1.p.rapidapi.com",
     },
   });
@@ -145,7 +145,7 @@ const checkDict = async function (word) {
     maxBodyLength: Infinity,
     url: `https://wordsapiv1.p.rapidapi.com/words/${word}`,
     headers: {
-      "X-RapidAPI-Key": "53560c708amsh7574e0f3f7ee562p1baadajsn5ad54f952a63",
+      "X-RapidAPI-Key": API_KEY,
       "X-RapidAPI-Host": "wordsapiv1.p.rapidapi.com",
     },
   };
